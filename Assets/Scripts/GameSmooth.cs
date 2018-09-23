@@ -29,10 +29,7 @@ public class GameSmooth {
     }
     public static GameState SmoothState(List<GameState> gameStates, GameState changedState, float stateTick)
     {
-        if(Mathf.Abs(changedState.cookieNum - gameStates[gameStates.Count-1].cookieNum) <= 10) //допустимая погрешность сглаживания
-        {
-            return new GameState(gameStates[gameStates.Count - 1]);
-        }
+        
         int stateToChangeNum = gameStates.FindIndex((GameState state) => state.time >= changedState.time);
         if (stateToChangeNum > 0)
         {
@@ -40,9 +37,16 @@ public class GameSmooth {
         }
         else
         {
-            return new GameState(gameStates[gameStates.Count - 1]);
+            GameState newState = new GameState(gameStates[gameStates.Count - 1]);
+            gameStates.Clear();
+            return newState;
         }
-
+        if (Mathf.Abs(changedState.cookieNum - gameStates[gameStates.Count - 1].cookieNum) <= 10) //допустимая погрешность сглаживания
+        {
+            GameState newState = new GameState(gameStates[gameStates.Count - 1]);
+            //gameStates.Clear();
+            return newState;
+        }
 
         for (int i = 0; i < gameStates.Count; i++)
         {

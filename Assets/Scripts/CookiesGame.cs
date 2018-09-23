@@ -30,7 +30,7 @@ public class CookiesGame {
             lock (unprocessedCommand)
             {
                 ReciveComand(new Command(Command.CommandType.ServerTick));
-                Debug.LogError("ServerTick");
+
                 GameState newState = GameSmooth.ExecuteCommands(unprocessedCommand,gameStates,serverFps);
                 gameStates.Add(newState);
                 Sync(newState);

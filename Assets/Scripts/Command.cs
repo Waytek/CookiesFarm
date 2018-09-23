@@ -29,7 +29,12 @@ public class Command
                 state.cookieNum += state.cookiePerClick;
                 break;
             case Command.CommandType.BuildFactory:
-                state.cookiePerSec += (float)parametr;
+                if (state.cookieNum - 100 > 0)
+                {
+                    state.cookieNum -= 100;
+                    state.cookiePerSec += (float)parametr;
+                };
+                
                 break;
             default:
 
