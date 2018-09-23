@@ -57,7 +57,7 @@ public class CookieClick : MonoBehaviour {
         newState.processedCommand.Add(commandTick);
 
         cookieText.text = ((int)gameStates[gameStates.Count - 1].cookieNum).ToString();
-        debugText.text = game.DebugCookieNum().ToString();
+        debugText.text = ((int)game.DebugCookieNum()).ToString();
 
     }
     void OnDestroy()

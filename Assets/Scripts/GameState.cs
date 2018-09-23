@@ -25,7 +25,7 @@ public class GameState
     public GameState()          //стартовые значения
     {
         cookieNum = 0;
-        cookiePerSec = 1;
+        cookiePerSec = 0;
         cookiePerClick = 1;
         time = System.DateTime.Now;
     }

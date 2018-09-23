@@ -9,7 +9,7 @@ public class CookiesGame {
 
     bool isPlaying = true;
     
-    int serverFps = 1000; //ms
+    int serverFps = 100; //ms
 
     Thread farmCookieThread = null;
 
