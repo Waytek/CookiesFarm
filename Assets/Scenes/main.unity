@@ -264,8 +264,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1240293703}
-        m_MethodName: AddCPSTest
-        m_Mode: 4
+        m_MethodName: TestBuidFarmClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -839,11 +839,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8052270406950d64c853c5319ebcfdd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testFarm: {fileID: 11400000, guid: de6fa5809acfbc8448abbe2ca0524ce1, type: 2}
   cookieText: {fileID: 1977126220}
   debugText: {fileID: 880067587}
   pingText: {fileID: 1190608753}
   gameStates: []
-  serverGameStates: []
 --- !u!1 &1625029326
 GameObject:
   m_ObjectHideFlags: 0
