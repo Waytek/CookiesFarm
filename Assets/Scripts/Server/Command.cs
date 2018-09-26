@@ -24,20 +24,18 @@ public class Command
         switch (commandType)
         {
             case Command.CommandType.ServerTick:
-                state.cookieNum += state.GetCookiePerSecond() * (stateTick / 1000f);
+                state.cookieNum += state.GetCookiePerSecond() * ((float)parametr);
                 break;
             case Command.CommandType.CookieClick:
-                state.cookieNum += state.cookiePerClick;
+                state.SetCookieNum(state.GetCookieNum() + state.GetCookiePerClick());
                 break;
             case Command.CommandType.BuildFarm:
                 Farm newFarm = (Farm)parametr;
-                //Debug.LogError(state.cookieNum + " " + newFarm.GetPrice());
-                if (state.cookieNum >= newFarm.GetPrice())
+                if (state.GetCookieNum() >= newFarm.GetPrice())
                 {
-                    state.cookieNum -= newFarm.GetPrice();
-                    state.farms.Add(newFarm);
+                    state.SetCookieNum(state.GetCookieNum() - newFarm.GetPrice());
+                    state.AddFarm(newFarm);
                 };
-                
                 break;
             default:
 
@@ -49,12 +47,14 @@ public class Command
         switch (commandType)
         {
             case Command.CommandType.ServerTick:
-                state.cookieNum -= state.GetCookiePerSecond() * (stateTick / 1000f);
+                state.cookieNum -= state.GetCookiePerSecond() * ((float)parametr);
                 break;
             case Command.CommandType.CookieClick:
-                state.cookieNum -= state.cookiePerClick;
+                state.SetCookieNum(state.GetCookieNum() - state.GetCookiePerClick());
                 break;
             case Command.CommandType.BuildFarm:
+                state.SetCookieNum(state.GetCookieNum() + ((Farm)parametr).GetPrice());
+                state.RemoveFarm((Farm)parametr);
                 break;
             default:
                 break;

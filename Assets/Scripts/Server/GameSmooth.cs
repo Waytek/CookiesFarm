@@ -3,62 +3,62 @@ using UnityEngine;
 
 public class GameSmooth {
 
-    public static GameState ExecuteCommands(List<Command> unprocessedCommand, List<GameState> gameStates, float stateTick)
+    public static GameState ExecuteCommands(List<Command> unprocessedCommand, List<Command> processedCommand, GameState currentState, float stateTick, out System.DateTime sendTime)
     {
-        unprocessedCommand.Sort((x, y) => System.DateTime.Compare(x.time, y.time));
-        if(unprocessedCommand.Count == 0)
-        {
-            return new GameState(gameStates[gameStates.Count - 1]);
-        }
-        int actualStateNum = gameStates.FindIndex((GameState state) => state.time > unprocessedCommand[0].time);
-        if (actualStateNum > 0)
-        {
-            gameStates.RemoveRange(0, actualStateNum - 1);
-        }
-        foreach (Command command in unprocessedCommand)
-        {
-            command.ApplyCommand(gameStates[0], stateTick);
-            gameStates[0].processedCommand.Add(command);
-        }
-        unprocessedCommand.Clear();
-        for (int i = 1; i < gameStates.Count; i++)
-        {                           
-            gameStates[i].Rewrite(gameStates[i - 1], stateTick);
-        }
-        return new GameState(gameStates[gameStates.Count - 1]);
-    }
-    public static GameState SmoothState(List<GameState> gameStates, GameState changedState, float stateTick)
-    {
-        
-        int stateToChangeNum = gameStates.FindIndex((GameState state) => state.time >= changedState.time);
-        if (stateToChangeNum > 0)
-        {
-            gameStates.RemoveRange(0, stateToChangeNum - 1);
-        }
-        else
-        {
-            GameState newState = new GameState(gameStates[gameStates.Count - 1]);
-            gameStates.Clear();
-            return newState;
-        }
-        if (Mathf.Abs(changedState.cookieNum - gameStates[gameStates.Count - 1].cookieNum) <= 10) //допустимая погрешность сглаживания
-        {
-            GameState newState = new GameState(gameStates[gameStates.Count - 1]);
-            //gameStates.Clear();
-            return newState;
-        }
 
-        for (int i = 0; i < gameStates.Count; i++)
+        /*Сервер:
+        Получить состояние в момент самой старой команды,
+        для этого берём выполненные команды, оставляем только те что были выполнены после самой старой невыполненной команда, остальные удаляем
+        берём теущий гейм стэйт и откатываем с него выполненные команды
+        к получившемуся состоянию применяем выполненные и невыполненные команды, отсортированные по дате по возрастанию
+        возвращаем получившееся состояние
+        */
+        unprocessedCommand.Sort((x, y) => System.DateTime.Compare(x.time, y.time));
+        sendTime = unprocessedCommand[unprocessedCommand.Count - 1].time;
+        if (processedCommand.Count > 0)
         {
-            if (i == 0)
-            {
-                gameStates[i].Rewrite(changedState, stateTick);
-            }
-            else
-            {
-                gameStates[i].Rewrite(gameStates[i - 1], stateTick);
-            }
+            int numToRemove = processedCommand.FindLastIndex((Command command) => command.time < unprocessedCommand[0].time);
+            if (numToRemove != -1)
+                processedCommand.RemoveRange(0, numToRemove + 1);
         }
-        return new GameState(gameStates[gameStates.Count - 1]);            
+        foreach (Command command in processedCommand)
+        {
+            command.DeclyneCommand(currentState, stateTick);
+        }
+        processedCommand.AddRange(unprocessedCommand);
+        unprocessedCommand.Clear();
+        foreach (Command command in processedCommand)
+        {
+            command.ApplyCommand(currentState, stateTick);
+        }
+        return currentState;
+
+
+    }
+    public static GameState SmoothState(List<Command> processedCommand, GameState changedGameState, System.DateTime serverStateTime, float stateTick)
+    {
+        /*Клиент:
+        Получаем с сервера состояние и время его отправки
+        из массива выполненных команд удаляем те, что старше пришедшего состояния
+        оставшиеся применяем к состоянию
+        
+        Примечание: 
+        - до применение сглаживания стоит сравнить пришедшее состояние с текущим состоянием клиента и принять решение - нужно сглаживать или нет, 
+        что бы уменьшить нагрузку на клиент;
+        сравнить состояние лучше в классе игры
+        */
+
+        int numToRemove = processedCommand.FindLastIndex((Command command) => command.time <= serverStateTime);
+        if(numToRemove == -1)
+        {
+            processedCommand.Clear();
+        }
+        processedCommand.RemoveRange(0, numToRemove+1);
+
+        foreach (Command command in processedCommand)
+        {
+            command.ApplyCommand(changedGameState, stateTick);
+        }
+        return changedGameState;
     }
 }

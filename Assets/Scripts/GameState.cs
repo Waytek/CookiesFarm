@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class GameState
@@ -6,50 +7,64 @@ public class GameState
     public float cookieNum;
     public List<Farm> farms = new List<Farm>();
     
-    public float cookiePerClick;
-    public System.DateTime time;
-    public List<Command> processedCommand = new List<Command>();
+    float cookiePerClick;
+
+    public float GetCookieNum()
+    {
+        return cookieNum;
+    }
+    public void SetCookieNum(float cookieNum)
+    {
+        this.cookieNum = cookieNum;
+    }
+
+    public float GetCookiePerClick()
+    {
+        return cookiePerClick;
+    }
+    public void SetCookieCookiePerClick(float cookiePerClick)
+    {
+        this.cookiePerClick = cookiePerClick;
+    }
+
     public GameState(float cookieNum, float cookiePerSec, float cookiePerClick)
     {
         this.cookieNum = cookieNum;
         this.cookiePerClick = cookiePerClick;
-        time = System.DateTime.Now;
     }
     public GameState(GameState gameState)
     {
         cookieNum = gameState.cookieNum;
         if (farms != gameState.farms)
         {
+            farms = new List<Farm>(gameState.farms);
             ChangeCookiePerSec();
         }
-        farms = gameState.farms;
         cookiePerClick = gameState.cookiePerClick;
-        time = System.DateTime.Now;
     }
     public GameState()          //стартовые значения
     {
         cookieNum = 0;
         cookiePerClick = 1;
-        time = System.DateTime.Now;
     }
-    public void Rewrite(GameState previosState, float stateTick)
+    public void AddFarm(Farm farm)
     {
-        cookieNum = previosState.cookieNum;
-        cookiePerClick = previosState.cookiePerClick;
-        if(farms != previosState.farms)
-        {
-            ChangeCookiePerSec();
-        }
-        farms = previosState.farms;
-        foreach(Command command in processedCommand)
-        {
-            command.ApplyCommand(this, stateTick);
-        }
+        farms.Add(farm);
+        ChangeCookiePerSec();
+    }
+    public void RemoveFarm(Farm farm)
+    {
+        farms.Remove(farm);
+        ChangeCookiePerSec();
+    }
+    public List<Farm> GetFarms()
+    {
+        return farms;
     }
     private float cookiePerSecond;
     void ChangeCookiePerSec() {
         float newCookiePerSecond = 0;
-        farms.ForEach((Farm farm) => cookiePerSecond += farm.GetCookiePerSecond());
+        farms.ForEach((Farm farm) => newCookiePerSecond += farm.GetCookiePerSecond());
         cookiePerSecond = newCookiePerSecond;
     }
     public float GetCookiePerSecond()

@@ -15,7 +15,6 @@ public class FarmType : ScriptableObject {
         for(int i = 0; i < farmCount; i++)
         {
             price += price * 0.09f;
-            Debug.LogError("farmCount" + farmCount + " farmPrice " + price);
         }
         return (int)price; 
     }

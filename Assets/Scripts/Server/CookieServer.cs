@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 public class CookieServer {
-    public System.Action<GameState> onGameStateChanged = delegate { };
+    public System.Action<GameState,System.DateTime> onServerStateChanged = delegate { };
 
     bool isPlaying = true;
     
@@ -11,14 +12,16 @@ public class CookieServer {
     Thread farmCookieThread = null;
 
     public List<Command> unprocessedCommand = new List<Command>();
-    public List<GameState> gameStates = new List<GameState>();
+    public List<Command> processedCommand = new List<Command>();
+//    public List<GameState> gameStates = new List<GameState>();
+    public GameState currentGameState = new GameState();
 
     public void CookiesGameServerStart()
     {
         
         farmCookieThread = new Thread(new ThreadStart(FarmCookieThread));
         farmCookieThread.Start();
-        gameStates.Add(new GameState());
+//        gameStates.Add(new GameState());
     }
     void FarmCookieThread()
     {
@@ -26,28 +29,28 @@ public class CookieServer {
         {
             lock (unprocessedCommand)
             {
-                ReciveComand(new Command(Command.CommandType.ServerTick));
-
-                GameState newState = GameSmooth.ExecuteCommands(unprocessedCommand,gameStates,serverFps);
-                gameStates.Add(newState);
-                Sync(newState);
+                if (unprocessedCommand.Count > 0)
+                {
+                    System.DateTime sendTime;
+                    currentGameState = GameSmooth.ExecuteCommands(unprocessedCommand, processedCommand, currentGameState, serverFps, out sendTime);
+                    Sync(currentGameState, sendTime);
+                }                
             }
             Thread.Sleep(serverFps);
         }
     }
     public float DebugCookieNum()
     {
-        if (gameStates.Count != 0)
-            return gameStates[gameStates.Count - 1].cookieNum;
-        return 0;
+        return currentGameState.GetCookieNum();
     }
     public void CookiesGameServerStop()
     {
         farmCookieThread.Abort();
     }
-    void Sync(GameState currentState)
-    {      
-        Sender.SendOnClient(onGameStateChanged, currentState);
+    void Sync(GameState currentState, System.DateTime sendTime)
+    {
+        Sender.SendOnClient(onServerStateChanged, currentState, sendTime);
+
     }
 
     public void ReciveComand(Command command)
