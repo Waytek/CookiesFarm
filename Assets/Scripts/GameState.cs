@@ -9,6 +9,28 @@ public class GameState
     
     float cookiePerClick;
 
+    public GameState(float cookieNum, float cookiePerSec, float cookiePerClick)
+    {
+        this.cookieNum = cookieNum;
+        this.cookiePerClick = cookiePerClick;
+    }
+    public GameState(GameState gameState)
+    {
+        cookieNum = gameState.cookieNum;
+        if (farms != gameState.farms)
+        {
+            farms = new List<Farm>(gameState.farms);
+            ChangeCookiePerSec();
+        }
+        cookiePerClick = gameState.cookiePerClick;
+    }
+    public GameState()          //стартовые значения
+    {      
+            cookieNum = 0;
+            cookiePerClick = 1;
+      
+    }
+
     public float GetCookieNum()
     {
         return cookieNum;
@@ -27,26 +49,7 @@ public class GameState
         this.cookiePerClick = cookiePerClick;
     }
 
-    public GameState(float cookieNum, float cookiePerSec, float cookiePerClick)
-    {
-        this.cookieNum = cookieNum;
-        this.cookiePerClick = cookiePerClick;
-    }
-    public GameState(GameState gameState)
-    {
-        cookieNum = gameState.cookieNum;
-        if (farms != gameState.farms)
-        {
-            farms = new List<Farm>(gameState.farms);
-            ChangeCookiePerSec();
-        }
-        cookiePerClick = gameState.cookiePerClick;
-    }
-    public GameState()          //стартовые значения
-    {
-        cookieNum = 0;
-        cookiePerClick = 1;
-    }
+
     public void AddFarm(Farm farm)
     {
         farms.Add(farm);

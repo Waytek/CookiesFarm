@@ -15,7 +15,7 @@ public class CookieGame : MonoBehaviour {
     public List<Command> processedCommand = new List<Command>();
     // Use this for initialization
     void Start () {
-
+        PlayerPrefs.DeleteAll();
        /* List<int> test = new List<int>();
         test.Add(1);
         test.Add(2);
@@ -48,9 +48,9 @@ public class CookieGame : MonoBehaviour {
         }
         if(Mathf.Abs(serverStatenoLag.GetCookiePerSecond() - currentGameState.GetCookiePerSecond()) < 2)
         {
-           // return;
+            return;
         }
-        currentGameState = GameSmooth.SmoothState(processedCommand, serverState, sendTime, Time.deltaTime);
+        currentGameState = serverStatenoLag;
         //gameStates.Add(newState);
         //currentGameState.UpdateGameState(gameStates[gameStates.Count - 1]);
         //Debug.LogError(newState.farms.Count);
@@ -93,7 +93,8 @@ public class CookieGame : MonoBehaviour {
     }
     void Update()
     {
-        Sender.ping = Random.Range(100, 1200);
+        //Sender.ping = Random.Range(100, 1200);
+        Sender.ping = Random.Range(200, 1200);
         Command commandTick = new Command(Command.CommandType.ServerTick,Time.deltaTime);
         commandTick.ApplyCommand(currentGameState, Time.deltaTime*1000);        
         processedCommand.Add(commandTick);
@@ -113,46 +114,8 @@ public class CookieGame : MonoBehaviour {
     void OnDestroy()
     {
         game.CookiesGameServerStop();
-    }
-    public class ObserverGameState{
-        float cookieNum;
-        public System.Action<float> onCookieNumChanged = delegate { };
-        List<Farm> farms = new List<Farm>();
-        public System.Action<List<Farm>> onFarmsChanged = delegate { };
-        //float cookiePerClick;
-        
-        public void UpdateGameState(GameState gameState)
-        {
-            SetCookieNum(gameState.GetCookieNum());
-            SetFarms(gameState.GetFarms());
-        }
-        public float GetCookieNum()
-        {
-            return cookieNum;
-        }
-        public void SetCookieNum(float newCookieNum)
-        {
-            if(cookieNum != newCookieNum)
-            {
-                cookieNum = newCookieNum;
-                onCookieNumChanged.Invoke(cookieNum);
-            }
-        }
-        public List<Farm> GetFarms()
-        {
-            return farms;
-        }
-        public void SetFarms(List<Farm> newFarms)
-        {
-            //Debug.LogError("farmsCount " + farms.GetHashCode() + " newFarmsCount " + newFarms.GetHashCode());
-//            var list3 = newFarms.Except(farms).ToList();
-           // Debug.LogError(newFarms.Count);
-            if (newFarms.Count != farms.Count)
-            {
-                farms.Clear();
-                farms = newFarms;
-                onFarmsChanged.Invoke(farms);
-            }
-        }
+        string save = JsonUtility.ToJson(currentGameState);
+        PlayerPrefs.SetString("save", save);
+        PlayerPrefs.Save();
     }
 }

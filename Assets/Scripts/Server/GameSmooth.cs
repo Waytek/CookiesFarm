@@ -15,7 +15,7 @@ public class GameSmooth {
         */
         unprocessedCommand.Sort((x, y) => System.DateTime.Compare(x.time, y.time));
         sendTime = unprocessedCommand[unprocessedCommand.Count - 1].time;
-        if (processedCommand.Count > 0)
+        /*if (processedCommand.Count > 0)
         {
             int numToRemove = processedCommand.FindLastIndex((Command command) => command.time < unprocessedCommand[0].time);
             if (numToRemove != -1)
@@ -30,7 +30,13 @@ public class GameSmooth {
         foreach (Command command in processedCommand)
         {
             command.ApplyCommand(currentState, stateTick);
+        }*/
+        processedCommand.AddRange(unprocessedCommand);
+        foreach (Command command in unprocessedCommand)
+        {
+            command.ApplyCommand(currentState, stateTick);
         }
+        unprocessedCommand.Clear();
         return currentState;
 
 
@@ -48,13 +54,13 @@ public class GameSmooth {
         сравнить состояние лучше в классе игры
         */
 
-        int numToRemove = processedCommand.FindLastIndex((Command command) => command.time <= serverStateTime);
+        /*int numToRemove = processedCommand.FindLastIndex((Command command) => command.time <= serverStateTime);
         if(numToRemove == -1)
         {
-            processedCommand.Clear();
+            //processedCommand.Clear();
         }
-        processedCommand.RemoveRange(0, numToRemove+1);
-
+        processedCommand.RemoveRange(0, numToRemove+1);*/
+        processedCommand.RemoveAll((Command command) => command.isApply);
         foreach (Command command in processedCommand)
         {
             command.ApplyCommand(changedGameState, stateTick);

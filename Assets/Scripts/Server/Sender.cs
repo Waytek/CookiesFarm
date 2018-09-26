@@ -6,7 +6,7 @@ using UnityEngine;
 public static class Sender {
     public static int ping = 10000;
 
-    public static void SendOnClient(System.Action<GameState,System.DateTime> success, GameState gameState, System.DateTime sendTime)
+    public static void SendOnClient(System.Action<GameState,System.DateTime> success, GameState gameState,List<Command> processedCommand, System.DateTime sendTime)
     {
         System.Action send = () =>
         {
@@ -16,12 +16,20 @@ public static class Sender {
             //Debug.LogError(gameState.time + " Now " + System.DateTime.Now);
              
             
-            Threading.Execute(delegate { success.Invoke(gameState,sendTime); });
+            Threading.Execute(delegate 
+            {
+                foreach (Command command in processedCommand)
+                {
+                    command.isApply = true;
+                }
+                success.Invoke(gameState,sendTime);
+                
+            });
         };
         Thread SendThread = new Thread(new ThreadStart(send));
         SendThread.Start();
     }
-
+    
     public static void SendOnServer(CookieServer game, Command command)
     {
         System.Action send = () =>

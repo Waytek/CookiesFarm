@@ -18,7 +18,13 @@ public class CookieServer {
 
     public void CookiesGameServerStart()
     {
-        
+
+        string save = PlayerPrefs.GetString("save");
+        if (!string.IsNullOrEmpty(save))
+        {
+            Debug.Log(save);
+            currentGameState = new GameState(JsonUtility.FromJson<GameState>(save));
+        }
         farmCookieThread = new Thread(new ThreadStart(FarmCookieThread));
         farmCookieThread.Start();
 //        gameStates.Add(new GameState());
@@ -49,7 +55,7 @@ public class CookieServer {
     }
     void Sync(GameState currentState, System.DateTime sendTime)
     {
-        Sender.SendOnClient(onServerStateChanged, currentState, sendTime);
+        Sender.SendOnClient(onServerStateChanged, currentState,processedCommand, sendTime);
 
     }
 

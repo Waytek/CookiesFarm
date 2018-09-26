@@ -4,6 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class Command
 {
+    public bool isApply = false;
     public CommandType commandType;
     public object parametr;
     public System.DateTime time;
@@ -41,6 +42,7 @@ public class Command
 
                 break;
         }
+        
     }
     public void DeclyneCommand(GameState state, float stateTick)
     {
