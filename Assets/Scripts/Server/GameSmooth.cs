@@ -53,17 +53,23 @@ public class GameSmooth {
         что бы уменьшить нагрузку на клиент;
         сравнить состояние лучше в классе игры
         */
+        lock (processedCommand)
+        {
 
-        /*int numToRemove = processedCommand.FindLastIndex((Command command) => command.time <= serverStateTime);
-        if(numToRemove == -1)
-        {
-            //processedCommand.Clear();
-        }
-        processedCommand.RemoveRange(0, numToRemove+1);*/
-        processedCommand.RemoveAll((Command command) => command.isApply);
-        foreach (Command command in processedCommand)
-        {
-            command.ApplyCommand(changedGameState, stateTick);
+            try
+            {
+                processedCommand.RemoveAll((Command command) => command.isApply);
+            }
+            catch
+            {
+                Debug.LogError("WTFFF!");
+            }
+            foreach (Command command in processedCommand.ToArray())
+                {
+                    command.ApplyCommand(changedGameState, stateTick);
+                }
+            
+            
         }
         return changedGameState;
     }

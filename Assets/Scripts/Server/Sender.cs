@@ -4,25 +4,25 @@ using System.Threading;
 using UnityEngine;
 
 public static class Sender {
-    public static int ping = 10000;
+    public static int ping = 1200;
 
     public static void SendOnClient(System.Action<GameState,System.DateTime> success, GameState gameState,List<Command> processedCommand, System.DateTime sendTime)
     {
         System.Action send = () =>
         {
-            //Debug.LogError("sender " + gameState.GetCookieNum());
             gameState = new GameState(gameState);
-            Thread.Sleep(ping/2);
-            //Debug.LogError(gameState.time + " Now " + System.DateTime.Now);
-             
-            
+            Thread.Sleep(ping/2);            
             Threading.Execute(delegate 
             {
-                foreach (Command command in processedCommand)
+                lock (processedCommand)
                 {
-                    command.isApply = true;
+                    foreach (Command command in processedCommand.ToArray())
+                    {
+                        command.isApply = true;
+                    }
+
+                    success.Invoke(gameState, sendTime);
                 }
-                success.Invoke(gameState,sendTime);
                 
             });
         };

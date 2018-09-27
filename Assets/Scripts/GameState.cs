@@ -6,7 +6,6 @@ public class GameState
 {
     public float cookieNum;
     public List<Farm> farms = new List<Farm>();
-    
     float cookiePerClick;
 
     public GameState(float cookieNum, float cookiePerSec, float cookiePerClick)
@@ -17,11 +16,10 @@ public class GameState
     public GameState(GameState gameState)
     {
         cookieNum = gameState.cookieNum;
-        if (farms != gameState.farms)
-        {
-            farms = new List<Farm>(gameState.farms);
-            ChangeCookiePerSec();
-        }
+
+        farms = new List<Farm>(gameState.farms);   
+        ChangeCookiePerSec();
+
         cookiePerClick = gameState.cookiePerClick;
     }
     public GameState()          //стартовые значения
@@ -69,6 +67,16 @@ public class GameState
         float newCookiePerSecond = 0;
         farms.ForEach((Farm farm) => newCookiePerSecond += farm.GetCookiePerSecond());
         cookiePerSecond = newCookiePerSecond;
+    }
+    public int GetFarmCount(FarmType farmType)
+    {
+        int typeFarmsCount = 0;
+        foreach (Farm f in farms)
+        {
+            if (f.type == farmType)
+                typeFarmsCount++;
+        }
+        return typeFarmsCount;
     }
     public float GetCookiePerSecond()
     {

@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Farm", menuName = "Farm", order = 51)]
 public class FarmType : ScriptableObject {

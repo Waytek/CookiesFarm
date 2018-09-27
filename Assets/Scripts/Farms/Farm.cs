@@ -17,7 +17,6 @@ public class Farm {
         }
 
         price = type.GetPrice(farmCount);
-//        Debug.LogError(price);
         cookiePerSecond = type.GetCookiePerSecond();
     }
     public float GetCookiePerSecond()

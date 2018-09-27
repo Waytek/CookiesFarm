@@ -13,21 +13,18 @@ public class CookieServer {
 
     public List<Command> unprocessedCommand = new List<Command>();
     public List<Command> processedCommand = new List<Command>();
-//    public List<GameState> gameStates = new List<GameState>();
     public GameState currentGameState = new GameState();
 
     public void CookiesGameServerStart()
     {
-
-        string save = PlayerPrefs.GetString("save");
+        Debug.Log(PlayerPrefs.GetString("save")); 
+        string save = Base64.Base64Decode(PlayerPrefs.GetString("save"));
         if (!string.IsNullOrEmpty(save))
-        {
-            Debug.Log(save);
+        {            
             currentGameState = new GameState(JsonUtility.FromJson<GameState>(save));
         }
         farmCookieThread = new Thread(new ThreadStart(FarmCookieThread));
         farmCookieThread.Start();
-//        gameStates.Add(new GameState());
     }
     void FarmCookieThread()
     {
